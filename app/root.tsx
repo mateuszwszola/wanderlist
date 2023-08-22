@@ -9,6 +9,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { Suspense, lazy } from "react";
 
 import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
@@ -21,6 +22,11 @@ export const links: LinksFunction = () => [
 export const loader = async ({ request }: LoaderArgs) => {
   return json({ user: await getUser(request) });
 };
+
+const RemixDevTools =
+  process.env.NODE_ENV === "development"
+    ? lazy(() => import("remix-development-tools"))
+    : null;
 
 export default function App() {
   return (
@@ -36,6 +42,11 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        {RemixDevTools ? (
+          <Suspense>
+            <RemixDevTools />
+          </Suspense>
+        ) : null}
       </body>
     </html>
   );
