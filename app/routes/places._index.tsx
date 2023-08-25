@@ -22,6 +22,10 @@ export default function PlaceIndexPage() {
       <Link to="/ai" prefetch="intent" className="text-white bg-teal-500 rounded py-3 px-4 text-xs uppercase font-semibold">
         Generate a random joke (streaming + prefetch)
       </Link>
+
+      <Link to="/ai-cdn-cache" prefetch="intent" className="text-white bg-teal-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+        Generate a random joke (CDN document cache)
+      </Link>
     </div>
   );
 }
