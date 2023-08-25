@@ -1,7 +1,6 @@
-import { Await, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
-import { Suspense } from "react";
+import { isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/node";
-import { defer } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { generateCompletion } from "~/ai.server";
 
 export function headers() {
@@ -11,23 +10,19 @@ export function headers() {
 }
 
 export async function loader ({ request }: LoaderArgs) {
-  const completion = generateCompletion();
+  const completion = await generateCompletion();
 
-  return defer({ completion });
+  return json({ completion });
 }
 
 export default function AiPage() {
   const data = useLoaderData<typeof loader>()
 
+  const randomJoke = data.completion?.[0]?.message?.content ?? "No jokes"
+
   return (
     <div className="container">
-      <Suspense fallback={<p>Loading random joke...</p>}>
-        <Await resolve={data.completion} errorElement={<p>Error loading a random joke</p>}>
-          {completion => (
-            <h2>{completion?.[0]?.message?.content ?? "No jokes"}</h2>
-          )}
-        </Await>
-      </Suspense>
+      <p>{randomJoke}</p>
     </div>
   );
 }
