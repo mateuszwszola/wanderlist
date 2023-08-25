@@ -5,15 +5,23 @@ export const meta: V2_MetaFunction = () => [{ title: "Places | Wanderlist" }];
 
 export default function PlaceIndexPage() {
   return (
-    <p>
+    <div className="flex flex-col gap-5">
       No place selected. Select a place on the left, or{" "}
       <Link to="new" className="text-blue-500 underline">
         create a new place.
       </Link>
 
-      <Link to="/ai" className="ml-4 text-white bg-blue-500 rounded py-3 px-4 text-xs uppercase font-semibold">
-        Generate a random joke
+      <Link to="/ai-fetcher" className="text-white bg-blue-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+        Generate a random joke (client side - useFetcher)
       </Link>
-    </p>
+
+      <Link to="/ai" className="text-white bg-blue-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+        Generate a random joke (streaming)
+      </Link>
+
+      <Link to="/ai" prefetch="intent" className="text-white bg-teal-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+        Generate a random joke (streaming + prefetch)
+      </Link>
+    </div>
   );
 }
