@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
+import { UserAuthForm } from "~/components/login";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
@@ -83,6 +84,8 @@ export default function Join() {
   return (
     <div className="flex min-h-full flex-col justify-center">
       <div className="mx-auto w-full max-w-md px-8">
+        <UserAuthForm />
+
         <Form method="post" className="space-y-6">
           <div>
             <label

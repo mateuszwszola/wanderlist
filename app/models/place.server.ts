@@ -46,6 +46,30 @@ export function createPlace({
   });
 }
 
+export function editPlace({
+  id: placeId,
+  city,
+  country,
+  visited,
+  note,
+  userId,
+}: Pick<Place, "id" | "city" | "country" | "visited" | "note"> & {
+  userId: User["id"];
+}) {
+  return prisma.place.update({
+    data: {
+      city,
+      country,
+      visited,
+      note,
+    },
+    where: {
+      id: placeId,
+      userId,
+    },
+  });
+}
+
 export function deletePlace({
   id,
   userId,

@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
+  Link,
   useLoaderData,
   useRouteError,
 } from "@remix-run/react";
@@ -36,17 +37,27 @@ export default function PlaceDetailsPage() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">{data.place.city} {data.place.country}</h3>
+      <h3 className="text-2xl font-bold">
+        {data.place.city} {data.place.country}
+      </h3>
       <p className="py-6">{data.place.note}</p>
       <hr className="my-4" />
-      <Form method="post">
-        <button
-          type="submit"
+      <div className="flex gap-4">
+        <Form method="post">
+          <button
+            type="submit"
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+          >
+            Delete
+          </button>
+        </Form>
+        <Link
+          to={`../edit?placeId=${data.place.id}`}
           className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
         >
-          Delete
-        </button>
-      </Form>
+          Edit
+        </Link>
+      </div>
     </div>
   );
 }

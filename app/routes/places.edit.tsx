@@ -1,14 +1,35 @@
-import type { ActionArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import invariant from "tiny-invariant";
 
-import { createPlace } from "~/models/place.server";
+import { editPlace, getPlace } from "~/models/place.server";
 import { requireUserId } from "~/session.server";
 import { PlaceSchema } from "~/utils/place";
 
+export const loader = async ({ request }: LoaderArgs) => {
+  const userId = await requireUserId(request);
+  
+  const url = new URL(request.url);
+  const placeId = url.searchParams.get("placeId");
+  invariant(placeId, "placeId not found");
+
+  const place = await getPlace({ id: placeId, userId });
+
+  if (!place) {
+    throw new Response("Not Found", { status: 404 });
+  }
+
+  return json({ place });
+}
+
 export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request);
+
+  const url = new URL(request.url);
+  const placeId = url.searchParams.get("placeId");
+  invariant(placeId, "placeId not found");
 
   const formData = await request.formData();
   const placeData = {
@@ -39,7 +60,8 @@ export const action = async ({ request }: ActionArgs) => {
 
   const data = validationResult.data;
 
-  const place = await createPlace({
+  const place = await editPlace({
+    id: placeId,
     userId,
     city: data.city,
     country: data.country,
@@ -51,6 +73,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function NewPlacePage() {
+  const { place } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const cityRef = useRef<HTMLInputElement>(null);
   const countryRef = useRef<HTMLInputElement>(null);
@@ -78,11 +101,12 @@ export default function NewPlacePage() {
     >
       <div>
         <label className="flex w-full flex-col gap-1">
-          <span>City: </span>
+          <span>City:</span>
           <input
             ref={cityRef}
             autoFocus
             name="city"
+            defaultValue={place?.city || ""}
             className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
             aria-invalid={actionData?.errors?.city ? true : undefined}
             aria-errormessage={
@@ -99,10 +123,11 @@ export default function NewPlacePage() {
 
       <div>
         <label className="flex w-full flex-col gap-1">
-          <span>Country: </span>
+          <span>Country:</span>
           <input
             ref={countryRef}
             name="country"
+            defaultValue={place?.country || ""}
             className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
             aria-invalid={actionData?.errors?.country ? true : undefined}
             aria-errormessage={
@@ -119,10 +144,11 @@ export default function NewPlacePage() {
 
       <div>
         <label className="flex w-full flex-col gap-1">
-          <span>Visited: </span>
+          <span>Visited:</span>
           <input
             type="checkbox"
             name="visited"
+            defaultChecked={place?.visited || false}
             className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
           />
         </label>
@@ -135,6 +161,7 @@ export default function NewPlacePage() {
             ref={noteRef}
             name="note"
             rows={8}
+            defaultValue={place?.note || ""}
             className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
             aria-invalid={actionData?.errors?.note ? true : undefined}
             aria-errormessage={

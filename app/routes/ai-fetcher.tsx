@@ -1,14 +1,18 @@
-import { isRouteErrorResponse, useFetcher, useRouteError } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useFetcher,
+  useRouteError,
+} from "@remix-run/react";
 import { useEffect } from "react";
 
 export default function AiPage() {
   const ai = useFetcher();
 
   useEffect(() => {
-    ai.load("/getRandomJoke")
+    ai.load("/getRandomJoke");
   }, []);
 
-  const randomJoke = ai.data?.completion?.[0]?.message?.content ?? "No jokes"
+  const randomJoke = ai.data?.completion?.[0]?.message?.content ?? "No jokes";
 
   return (
     <div className="container">
@@ -16,7 +20,6 @@ export default function AiPage() {
     </div>
   );
 }
-
 
 export function ErrorBoundary() {
   const error = useRouteError();

@@ -10,20 +10,30 @@ export default function PlaceIndexPage() {
       <Link to="new" className="text-blue-500 underline">
         create a new place.
       </Link>
-
-      <Link to="/ai-fetcher" className="text-white bg-blue-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+      <Link
+        to="/ai-fetcher"
+        className="rounded bg-blue-500 px-4 py-3 text-xs font-semibold uppercase text-white"
+      >
         Generate a random joke (client side - useFetcher)
       </Link>
-
-      <Link to="/ai" className="text-white bg-blue-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+      <Link
+        to="/ai"
+        className="rounded bg-blue-500 px-4 py-3 text-xs font-semibold uppercase text-white"
+      >
         Generate a random joke (streaming)
       </Link>
-
-      <Link to="/ai" prefetch="intent" className="text-white bg-teal-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+      <Link
+        to="/ai"
+        prefetch="intent"
+        className="rounded bg-teal-500 px-4 py-3 text-xs font-semibold uppercase text-white"
+      >
         Generate a random joke (streaming + prefetch)
       </Link>
-
-      <Link to="/ai-cdn-cache" prefetch="intent" className="text-white bg-teal-500 rounded py-3 px-4 text-xs uppercase font-semibold">
+      <Link
+        to="/ai-cdn-cache"
+        prefetch="intent"
+        className="rounded bg-teal-500 px-4 py-3 text-xs font-semibold uppercase text-white"
+      >
         Generate a random joke (CDN document cache)
       </Link>
     </div>
