@@ -1,6 +1,6 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
 
@@ -10,7 +10,7 @@ import { PlaceSchema } from "~/utils/place";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
-  
+
   const url = new URL(request.url);
   const placeId = url.searchParams.get("placeId");
   invariant(placeId, "placeId not found");
@@ -22,7 +22,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   }
 
   return json({ place });
-}
+};
 
 export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request);
@@ -181,10 +181,17 @@ export default function NewPlacePage() {
         ) : null}
       </div>
 
-      <div className="text-right">
+      <div className="flex align-center self-end gap-4">
+        <Link
+          to={place.id ? `/places/${place?.id}` : "/places"}
+          className="block rounded bg-orange-500 px-4 py-2 text-white hover:bg-orange-600 focus:bg-orange-400"
+        >
+          Cancel
+        </Link>
+
         <button
           type="submit"
-          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+          className="block rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
         >
           Save
         </button>

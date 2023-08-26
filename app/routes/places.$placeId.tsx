@@ -35,10 +35,16 @@ export const action = async ({ params, request }: ActionArgs) => {
 export default function PlaceDetailsPage() {
   const data = useLoaderData<typeof loader>();
 
+  const visitedContent = data.place.visited ? (
+    <span aria-label="Visited" title="Visited">📌</span>
+  ) : (
+    <span aria-label="Not Visited" title="Not Visited" className="opacity-25">📌</span>
+  );
+
   return (
     <div>
       <h3 className="text-2xl font-bold">
-        {data.place.city} {data.place.country}
+        {data.place.city} {data.place.country} {visitedContent}
       </h3>
       <p className="py-6">{data.place.note}</p>
       <hr className="my-4" />
