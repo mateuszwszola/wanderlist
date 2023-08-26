@@ -1,16 +1,48 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  NavLink,
+  Outlet,
+  useLoaderData,
+} from "@remix-run/react";
+import { VisitPlace } from "~/components/visitPlace";
 
-import { getPlaceListItems } from "~/models/place.server";
+import { getPlaceListItems, toggleVisited } from "~/models/place.server";
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
+import { ToggleVisitedInputSchema } from "~/utils/place";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request);
   const placeListItems = await getPlaceListItems({ userId });
   return json({ placeListItems });
-};
+}
+
+export async function action({ request }: ActionArgs) {
+  const userId = await requireUserId(request);
+
+  const formData = await request.formData();
+  const inputData = {
+    placeId: formData.get("placeId"),
+    visited: formData.get("visited"),
+  };
+
+  try {
+    const parsedData = ToggleVisitedInputSchema.parse(inputData);
+
+    await toggleVisited({
+      id: parsedData.placeId,
+      userId: userId,
+      visited: parsedData.visited === "yes",
+    });
+
+    return { ok: true };
+  } catch (e) {
+    return new Response("Bad Request", { status: 400 });
+  }
+}
 
 export default function PlacesPage() {
   const data = useLoaderData<typeof loader>();
@@ -49,11 +81,14 @@ export default function PlacesPage() {
                 <li key={place.id}>
                   <NavLink
                     className={({ isActive }) =>
-                      `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+                      `align-center flex justify-between gap-1 border-b p-4 text-xl ${
+                        isActive ? "bg-white" : ""
+                      }`
                     }
                     to={place.id}
                   >
-                    🗺 {`${place.city}, ${place.country}`}
+                    <span>🗺 {`${place.city}, ${place.country} `}</span>
+                    <VisitPlace placeId={place.id} isVisited={place.visited} />
                   </NavLink>
                 </li>
               ))}

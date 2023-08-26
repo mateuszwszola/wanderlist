@@ -6,3 +6,8 @@ export const PlaceSchema = z.object({
   visited: z.union([z.boolean(), z.string(), z.null()]),
   note: z.string().optional(),
 });
+
+export const ToggleVisitedInputSchema = z.object({
+  placeId: z.string(),
+  visited: z.string(),
+});

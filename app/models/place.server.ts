@@ -18,7 +18,7 @@ export function getPlaceListItems({ userId }: { userId: User["id"] }) {
   return prisma.place.findMany({
     where: { userId },
     select: { id: true, city: true, country: true, visited: true },
-    orderBy: { updatedAt: "desc" },
+    orderBy: { createdAt: "desc" },
   });
 }
 
@@ -62,6 +62,24 @@ export function editPlace({
       country,
       visited,
       note,
+    },
+    where: {
+      id: placeId,
+      userId,
+    },
+  });
+}
+
+export function toggleVisited({
+  id: placeId,
+  visited,
+  userId,
+}: Pick<Place, "id" | "visited"> & {
+  userId: User["id"];
+}) {
+  return prisma.place.update({
+    data: {
+      visited,
     },
     where: {
       id: placeId,
