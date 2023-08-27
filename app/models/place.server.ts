@@ -14,9 +14,21 @@ export function getPlace({
   });
 }
 
-export function getPlaceListItems({ userId }: { userId: User["id"] }) {
+export function getPlaceListItems({
+  userId,
+  searchTerm = "",
+}: {
+  userId: User["id"];
+  searchTerm?: string;
+}) {
   return prisma.place.findMany({
-    where: { userId },
+    where: {
+      userId,
+      OR: [
+        { city: { contains: searchTerm } },
+        { country: { contains: searchTerm } },
+      ],
+    },
     select: { id: true, city: true, country: true, visited: true },
     orderBy: { createdAt: "desc" },
   });

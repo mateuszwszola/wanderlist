@@ -6,7 +6,9 @@ import {
   NavLink,
   Outlet,
   useLoaderData,
+  useSearchParams,
 } from "@remix-run/react";
+import { PlaceSearchInput } from "~/components/placeSearch";
 import { VisitPlace } from "~/components/visitPlace";
 
 import { getPlaceListItems, toggleVisited } from "~/models/place.server";
@@ -16,7 +18,9 @@ import { ToggleVisitedInputSchema } from "~/utils/place";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request);
-  const placeListItems = await getPlaceListItems({ userId });
+  const { searchParams } = new URL(request.url);
+  const searchTerm = searchParams.get("q") || "";
+  const placeListItems = await getPlaceListItems({ userId, searchTerm });
   return json({ placeListItems });
 }
 
@@ -46,7 +50,10 @@ export async function action({ request }: ActionArgs) {
 
 export default function PlacesPage() {
   const data = useLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
   const user = useUser();
+
+  const searchTerm = searchParams.get('q');
 
   return (
     <div className="flex h-full min-h-screen flex-col">
@@ -67,6 +74,8 @@ export default function PlacesPage() {
 
       <main className="flex h-full bg-white">
         <div className="h-full w-80 border-r bg-gray-50">
+          <PlaceSearchInput defaultValue={searchTerm || ""} />
+
           <Link to="new" className="block p-4 text-xl text-blue-500">
             + New Place
           </Link>
