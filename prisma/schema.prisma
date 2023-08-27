@@ -15,7 +15,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   password Password?
-  notes    Note[]
+  places   Place[]
 }
 
 model Password {
@@ -25,10 +25,12 @@ model Password {
   userId String @unique
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Place {
+  id      String  @id @default(cuid())
+  city    String
+  country String
+  visited Boolean @default(false)
+  note    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

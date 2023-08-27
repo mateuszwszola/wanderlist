@@ -83,15 +83,24 @@ function handleBrowserRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    let shellRendered = false;
+    const context =
+      process.env.NODE_ENV === "development"
+        ? await import("remix-development-tools").then(({ initServer }) =>
+            initServer(remixContext)
+          )
+        : remixContext;
+
     const { pipe, abort } = renderToPipeableStream(
       <RemixServer
-        context={remixContext}
+        context={context}
         url={request.url}
         abortDelay={ABORT_DELAY}
       />,
       {
         onShellReady() {
+          shellRendered = true;
           const body = new PassThrough();
 
           responseHeaders.set("Content-Type", "text/html");
@@ -109,8 +118,10 @@ function handleBrowserRequest(
           reject(error);
         },
         onError(error: unknown) {
-          console.error(error);
           responseStatusCode = 500;
+          if (shellRendered) {
+            console.error(error);
+          }
         },
       }
     );
