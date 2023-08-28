@@ -17,9 +17,11 @@ export function getPlace({
 export function getPlaceListItems({
   userId,
   searchTerm = "",
+  take = 100,
 }: {
   userId: User["id"];
   searchTerm?: string;
+  take?: number;
 }) {
   return prisma.place.findMany({
     where: {
@@ -29,8 +31,9 @@ export function getPlaceListItems({
         { country: { contains: searchTerm } },
       ],
     },
-    select: { id: true, city: true, country: true, visited: true },
+    select: { id: true, city: true, country: true, visited: true, note: true },
     orderBy: { createdAt: "desc" },
+    take,
   });
 }
 

@@ -1,4 +1,6 @@
 import { useFetcher } from "@remix-run/react";
+import { useEffect } from "react";
+import { useToast } from "~/components/ui/use-toast";
 
 export function VisitPlace({
   placeId,
@@ -8,12 +10,22 @@ export function VisitPlace({
   isVisited: boolean;
 }) {
   const visitPlace = useFetcher();
+  const { toast } = useToast();
 
   let visited = isVisited;
 
   if (visitPlace.formData) {
-    visited = visitPlace.formData.get('visited') === 'yes';
+    visited = visitPlace.formData.get("visited") === "yes";
   }
+
+  useEffect(() => {
+    if (visitPlace.state === "idle" && visitPlace.data && !visitPlace.data.ok) {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      });
+    }
+  }, [toast, visitPlace.data, visitPlace.state]);
 
   return (
     <visitPlace.Form method="POST">

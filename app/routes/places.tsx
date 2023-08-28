@@ -6,7 +6,7 @@ import {
   NavLink,
   Outlet,
   useLoaderData,
-  useSearchParams,
+  useSearchParams
 } from "@remix-run/react";
 import { PlaceSearchInput } from "~/components/placeSearch";
 import { VisitPlace } from "~/components/visitPlace";
@@ -44,7 +44,7 @@ export async function action({ request }: ActionArgs) {
 
     return { ok: true };
   } catch (e) {
-    return new Response("Bad Request", { status: 400 });
+    return { ok: false };
   }
 }
 
@@ -53,7 +53,7 @@ export default function PlacesPage() {
   const [searchParams] = useSearchParams();
   const user = useUser();
 
-  const searchTerm = searchParams.get('q');
+  const searchTerm = searchParams.get("q");
 
   return (
     <div className="flex h-full min-h-screen flex-col">
