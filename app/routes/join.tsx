@@ -6,7 +6,6 @@ import { useEffect, useRef } from "react";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
-import { UserAuthForm } from "~/components/login";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
