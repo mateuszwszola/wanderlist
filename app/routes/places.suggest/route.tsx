@@ -1,3 +1,5 @@
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { defer, json } from "@remix-run/node";
 import {
   Await,
   isRouteErrorResponse,
@@ -5,12 +7,13 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import { Suspense } from "react";
-import type { LoaderArgs } from "@remix-run/node";
-import { defer } from "@remix-run/node";
 import { generatePlaceSuggestions } from "~/ai.server";
+import { createPlace, getPlaceListItems } from "~/models/place.server";
 import { requireUserId } from "~/session.server";
-import { getPlaceListItems } from "~/models/place.server";
-import { convertSuggestionToPlaces } from "./utils";
+import { NewPlaceSchema } from "~/utils/place";
+import { AddPlace } from "./AddPlace";
+import { convertSuggestionToPlaces, defaultPlaceList } from "./utils";
+import { Suggestion } from "./Suggestion";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request);
@@ -43,21 +46,26 @@ export default function PlaceSuggestPage() {
           errorElement={<p>Error loading a random place suggestion</p>}
         >
           {(completion) => {
-            const places = convertSuggestionToPlaces(
+            let places = convertSuggestionToPlaces(
               completion?.[0]?.message?.content ?? "[]"
             );
 
-            if (places.length === 0) return <p>No suggestions</p>;
+            if (places.length === 0) {
+              places = defaultPlaceList;
+            }
 
             return (
               <ul className="flex flex-col gap-4 divide-y-2">
                 {places.map((place) => (
-                  <li className="block px-4 py-4" key={place.id}>
-                    <h3 className="text-xl font-bold">
-                      {place.city}, {place.country}
-                    </h3>
-                    <p className="mt-2">{place.note}</p>
-                  </li>
+                  <Suggestion key={place.id} place={place}>
+                    <AddPlace
+                      place={{
+                        city: place.city,
+                        country: place.country,
+                        note: place.note,
+                      }}
+                    />
+                  </Suggestion>
                 ))}
               </ul>
             );
@@ -66,6 +74,60 @@ export default function PlaceSuggestPage() {
       </Suspense>
     </div>
   );
+}
+
+export const action = async ({ request }: ActionArgs) => {
+  const userId = await requireUserId(request);
+
+  const formData = await request.formData();
+  const placeData = {
+    city: formData.get("city"),
+    country: formData.get("country"),
+    note: formData.get("note"),
+    visited: null,
+  };
+
+  const validationResult = NewPlaceSchema.safeParse(placeData);
+
+  if (!validationResult.success) {
+    const { fieldErrors } = validationResult.error.flatten();
+    const formattedErrors = Object.fromEntries(
+      Object.entries(fieldErrors).map(([key, value]) => [
+        key,
+        Array.isArray(value) ? value[0] : value,
+      ])
+    );
+
+    return json(
+      {
+        errors: formattedErrors,
+      },
+      { status: 400 }
+    );
+  }
+
+  const data = validationResult.data;
+
+  const place = await createPlace({
+    userId,
+    city: data.city,
+    country: data.country,
+    note: data.note || null,
+    visited: Boolean(data.visited),
+  });
+
+  return json({
+    ok: true,
+    place,
+  });
+};
+
+/* 
+We want to fetch the list of place suggestions once per interaction.
+... and we do not want to revalidate the data when the user adds a place to their list.
+*/
+export function shouldRevalidate() {
+  return false;
 }
 
 export function ErrorBoundary() {

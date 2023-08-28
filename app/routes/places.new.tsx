@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 
 import { createPlace } from "~/models/place.server";
 import { requireUserId } from "~/session.server";
-import { PlaceSchema } from "~/utils/place";
+import { NewPlaceSchema } from "~/utils/place";
 
 export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request);
@@ -18,7 +18,7 @@ export const action = async ({ request }: ActionArgs) => {
     note: formData.get("note"),
   };
 
-  const validationResult = PlaceSchema.safeParse(placeData);
+  const validationResult = NewPlaceSchema.safeParse(placeData);
 
   if (!validationResult.success) {
     const { fieldErrors } = validationResult.error.flatten();

@@ -44,7 +44,7 @@ export default function PlaceDetailsPage() {
   return (
     <div>
       <h3 className="text-2xl font-bold">
-        {data.place.city} {data.place.country} {visitedContent}
+        {data.place.city}, {data.place.country} {visitedContent}
       </h3>
       <p className="py-6">{data.place.note}</p>
       <hr className="my-4" />
