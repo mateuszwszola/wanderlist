@@ -11,30 +11,10 @@ export default function PlaceIndexPage() {
         create a new place.
       </Link>
       <Link
-        to="/ai-fetcher"
+        to="suggest"
         className="rounded bg-blue-500 px-4 py-3 text-xs font-semibold uppercase text-white"
       >
-        Generate a random joke (client side - useFetcher)
-      </Link>
-      <Link
-        to="/ai"
-        className="rounded bg-blue-500 px-4 py-3 text-xs font-semibold uppercase text-white"
-      >
-        Generate a random joke (streaming)
-      </Link>
-      <Link
-        to="/ai"
-        prefetch="intent"
-        className="rounded bg-teal-500 px-4 py-3 text-xs font-semibold uppercase text-white"
-      >
-        Generate a random joke (streaming + prefetch)
-      </Link>
-      <Link
-        to="/ai-cdn-cache"
-        prefetch="intent"
-        className="rounded bg-teal-500 px-4 py-3 text-xs font-semibold uppercase text-white"
-      >
-        Generate a random joke (CDN document cache)
+        Go to Random suggestions
       </Link>
     </div>
   );
